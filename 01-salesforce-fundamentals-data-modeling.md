@@ -113,6 +113,73 @@ Exam tip: formula and roll-up summary fields often appear in "declarative vs Ape
 - Supports roll-up summary fields on the master.
 - Useful for true parent-owned child records.
 
+## How to create lookup and master-detail in Setup
+### Create a Lookup Relationship
+1. Go to **Setup -> Object Manager**.
+2. Open the child object (example: `Book__c`).
+3. Open **Fields & Relationships** and click **New**.
+4. Choose **Lookup Relationship** and click **Next**.
+5. Select the parent object (example: `Category__c`) and click **Next**.
+6. Set field label/name, choose required/optional behavior, and configure field-level security.
+7. Add to page layouts and save.
+
+When to choose this:
+- Use lookup when the child can exist independently.
+- Use it when ownership and sharing should remain separate between parent and child.
+
+### Create a Master-Detail Relationship
+1. Go to **Setup -> Object Manager**.
+2. Open the detail (child) object (example: `Book_Review__c`).
+3. Open **Fields & Relationships** and click **New**.
+4. Choose **Master-Detail Relationship** and click **Next**.
+5. Select the master object (example: `Book__c`) and click **Next**.
+6. Configure related list label, field-level security, and page layouts.
+7. Save and verify that the detail now inherits owner/sharing from master.
+
+When to choose this:
+- Use master-detail when child lifecycle must depend on parent.
+- Use it when you need roll-up summaries on the parent.
+
+## API naming: `__c` vs no suffix, and `__r`
+### Why some fields end with `__c`
+- `__c` means **custom** object or field created in your org.
+- No `__c` usually means **standard** Salesforce object/field.
+
+Examples:
+- Custom field: `Category__c` (picklist or relationship, depending on field type).
+- Standard field: `CreatedById` (system-managed lookup to `User`).
+- Standard field: `Name` (default name field on each object).
+
+### What `__r` means
+- `__r` is used for **relationship traversal** in SOQL/Apex.
+- If `Category__c` stores the parent Id, then `Category__r` lets you access parent fields.
+
+Example (`Book__c` has lookup field `Category__c`):
+```apex
+// Relationship Id value on child
+SELECT Id, Name, Category__c
+FROM Book__c
+```
+What this snippet does:
+- Returns book records and the raw parent Id stored in `Category__c`.
+
+```apex
+// Parent field traversal via relationship name
+SELECT Id, Name, Category__r.Name
+FROM Book__c
+```
+What this snippet does:
+- Returns book records plus the parent category name using relationship traversal.
+
+### Standard relationship example (`CreatedById` vs `CreatedBy.Name`)
+```apex
+SELECT Id, Name, CreatedById, CreatedBy.Name
+FROM Book__c
+```
+What this snippet does:
+- `CreatedById` is the raw user Id value.
+- `CreatedBy.Name` traverses the standard relationship and returns the creator's display name.
+
 ## Junction object
 A junction object models many-to-many relationships using two master-detail relationships.
 
