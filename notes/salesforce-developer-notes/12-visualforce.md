@@ -33,6 +33,9 @@ MVC mapping:
     </apex:form>
 </apex:page>
 ```
+What this snippet does:
+- Uses a standard controller-backed page to edit `Account` with built-in `save` action handling.
+- Binds form fields directly to standard controller context record.
 
 ## Custom controller example
 ```apex
@@ -45,6 +48,9 @@ public with sharing class AccountCreateController {
     }
 }
 ```
+What this snippet does:
+- Implements a custom controller that inserts an account and shows confirmation page message.
+- Returns `null` to stay on same page after action.
 
 ## Extension controller example
 ```apex
@@ -58,6 +64,9 @@ public with sharing class AccountExtension {
     }
 }
 ```
+What this snippet does:
+- Adds extension behavior on top of a standard controller using constructor injection.
+- Exposes an extra helper method usable from page markup.
 
 ## Standard vs custom vs extension
 - **Standard controller:** best when standard record behavior is enough.
@@ -74,12 +83,16 @@ Exam tip: standard controllers give built-in actions like `save`, `edit`, `delet
 ```xml
 <apex:pageMessages />
 ```
+What this snippet does:
+- Renders controller-generated feedback messages (errors/warnings/confirms) on the page.
 
 ```apex
 ApexPages.addMessage(
     new ApexPages.Message(ApexPages.Severity.ERROR, 'Validation failed')
 );
 ```
+What this snippet does:
+- Pushes a UI-visible page message into the Visualforce message queue.
 
 ## System mode and security
 - Visualforce with standard controller enforces standard behavior.

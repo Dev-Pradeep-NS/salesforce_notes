@@ -61,6 +61,10 @@ Boolean isActive = true;
 Date orderDate = Date.today();
 Datetime createdAt = Datetime.now();
 ```
+What this snippet does:
+- Declares common Apex value types used in day-to-day logic.
+- Shows platform date/time helpers (`Date.today()`, `Datetime.now()`), which are timezone-sensitive for `Datetime`.
+- Demonstrates explicit typing so type errors are caught at compile time.
 
 ## Simple utility class example
 ```apex
@@ -78,6 +82,11 @@ public with sharing class OrderUtils {
     }
 }
 ```
+What this snippet does:
+- `with sharing` ensures record-level access rules are respected.
+- `isHighValue` safely handles `null` and enforces a high-value threshold.
+- `safeTrim` prevents null-pointer issues and normalizes empty input.
+- `buildWelcome` composes reusable helpers instead of duplicating string handling.
 
 ## Design rules for production Apex
 - Bulk-first mindset always.
@@ -98,6 +107,10 @@ public with sharing class AccountReader {
     }
 }
 ```
+What this snippet does:
+- Demonstrates a simple read service pattern in Apex.
+- Uses sharing-aware access and returns a bounded set of visible records.
+- Keeps query shape explicit (`Id`, `Name`) for performance and clarity.
 
 ### CRUD/FLS checks
 Before read/write on sensitive objects/fields, check permissions:
@@ -110,6 +123,10 @@ if (!Schema.sObjectType.Account.fields.AnnualRevenue.isUpdateable()) {
     throw new SecurityException('No update access on AnnualRevenue');
 }
 ```
+What this snippet does:
+- Performs object-level and field-level permission checks before write operations.
+- Fails fast with clear exceptions when the running user lacks required access.
+- Shows baseline CRUD/FLS enforcement for secure Apex.
 
 Prefer `Security.stripInaccessible` when processing dynamic field sets for safer field-level enforcement.
 
@@ -143,3 +160,4 @@ Good pattern:
 1. Build a utility class with 5 static methods for string/date/amount helpers.
 2. Create one method that accepts `List<Account>` and validates naming rules.
 3. Write tests for both happy path and edge cases (`null`, blanks, boundary values).
+

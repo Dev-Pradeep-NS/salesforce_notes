@@ -49,6 +49,8 @@ Exam tip: if asked where client-side controller logic lives in Lightning compone
     <p>Hello, {name}</p>
 </template>
 ```
+What this snippet does:
+- Binds input value to component state and re-renders greeting text reactively.
 ```javascript
 import { LightningElement } from 'lwc';
 export default class Greeting extends LightningElement {
@@ -56,6 +58,9 @@ export default class Greeting extends LightningElement {
     handleChange(event) { this.name = event.target.value; }
 }
 ```
+What this snippet does:
+- Defines local state (`name`) and updates it from `change` events.
+- Demonstrates core one-way data flow with event-driven state mutation.
 
 ## Working with Apex
 LWC can call Apex imperatively or through `@wire`.
@@ -69,6 +74,8 @@ export default class AccountList extends LightningElement {
     @wire(getAccounts) accounts;
 }
 ```
+What this snippet does:
+- Wires Apex data source declaratively so component receives data reactively.
 
 Use imperative Apex when the action is user-driven or not naturally reactive:
 ```javascript
@@ -78,6 +85,8 @@ async loadAccounts() {
     this.rows = await getAccounts();
 }
 ```
+What this snippet does:
+- Demonstrates imperative Apex invocation for user-triggered or non-reactive loading.
 
 Related Apex pattern:
 ```apex
@@ -88,6 +97,8 @@ public with sharing class AccountController {
     }
 }
 ```
+What this snippet does:
+- Exposes a cacheable Apex read method callable from LWC via `@wire`.
 
 ## Getters/setters
 ```javascript
@@ -100,6 +111,8 @@ export default class ScoreBadge extends LightningElement {
     get variant() { return this._score >= 80 ? 'success' : 'warning'; }
 }
 ```
+What this snippet does:
+- Uses public API setter/getter to normalize incoming values and derive computed UI variant.
 
 ## Conditional and list rendering
 ```html
@@ -112,6 +125,8 @@ export default class ScoreBadge extends LightningElement {
     <p>No data found</p>
 </template>
 ```
+What this snippet does:
+- Demonstrates conditional template rendering and keyed list iteration.
 
 ## Parent-child communication
 - Parent -> Child via `@api` property.
@@ -120,12 +135,16 @@ export default class ScoreBadge extends LightningElement {
 ```javascript
 this.dispatchEvent(new CustomEvent('select', { detail: { recordId: this.recordId } }));
 ```
+What this snippet does:
+- Emits a custom event from child to parent with selected record payload.
 
 ## Query selectors
 ```javascript
 const button = this.template.querySelector('lightning-button');
 const allInputs = this.template.querySelectorAll('lightning-input');
 ```
+What this snippet does:
+- Uses template-scoped DOM querying to access one or multiple rendered elements.
 
 ## Lifecycle hooks (important)
 Common hooks:
@@ -149,6 +168,8 @@ export default class LifecycleDemo extends LightningElement {
     }
 }
 ```
+What this snippet does:
+- Demonstrates lifecycle hooks for setup, post-render behavior, and cleanup.
 
 ## Styling and SLDS
 - Prefer SLDS utility classes first.

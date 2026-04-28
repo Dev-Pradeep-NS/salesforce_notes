@@ -16,6 +16,9 @@ trigger AccountTrigger on Account (before insert, before update) {
     }
 }
 ```
+What this snippet does:
+- Routes trigger entry points to handler methods by event/context.
+- Keeps trigger body thin and pushes business logic into a dedicated class.
 
 ### Trigger syntax and events (explicit)
 ```apex
@@ -26,6 +29,8 @@ trigger TriggerName on ObjectName (
     // trigger logic
 }
 ```
+What this snippet does:
+- Shows full trigger declaration syntax with all core lifecycle events.
 
 Trigger types:
 - **Before triggers**: update/validate values before save.
@@ -51,6 +56,9 @@ for (Account acc : Trigger.new) {
     }
 }
 ```
+What this snippet does:
+- Demonstrates safe mutation of incoming rows in `before insert`.
+- Uses context guards and bulk iteration instead of single-record logic.
 
 #### `Trigger.old`
 - Type: `List<sObject>`
@@ -62,6 +70,8 @@ for (Account oldAcc : Trigger.old) {
     System.debug('Previous name: ' + oldAcc.Name);
 }
 ```
+What this snippet does:
+- Iterates prior-state records for comparison/logging in update/delete contexts.
 
 #### `Trigger.newMap`
 - Type: `Map<Id, sObject>`
@@ -74,6 +84,8 @@ for (Id accId : Trigger.newMap.keySet()) {
     System.debug('New name: ' + newAcc.Name);
 }
 ```
+What this snippet does:
+- Performs Id-keyed lookups of new record values using `newMap`.
 
 #### `Trigger.oldMap`
 - Type: `Map<Id, sObject>`
@@ -88,6 +100,8 @@ for (Account newAcc : (List<Account>)Trigger.new) {
     }
 }
 ```
+What this snippet does:
+- Compares old and new values per record using `oldMap` to detect meaningful field changes.
 
 Quick rule:
 - Need current values -> `Trigger.new` / `Trigger.newMap`
@@ -112,6 +126,9 @@ public with sharing class AccountTriggerHandler {
     }
 }
 ```
+What this snippet does:
+- Implements handler pattern with separated `beforeInsert` and `beforeUpdate` methods.
+- Centralizes validation/defaulting logic outside trigger declaration.
 
 ## Trigger best practices
 - One trigger per object.
@@ -127,6 +144,8 @@ Avoid this pattern:
 Account firstRow = Trigger.new[0];
 firstRow.Description = 'Updated';
 ```
+What this snippet does:
+- Highlights non-bulk-safe behavior that ignores all records except index 0.
 
 Use this pattern:
 ```apex
@@ -136,6 +155,8 @@ for (Account acc : Trigger.new) {
     }
 }
 ```
+What this snippet does:
+- Shows the correct bulk-safe pattern for updating every row in trigger context.
 
 ## Order of execution awareness
 - Validation rules, before triggers, after triggers, workflow/flows, roll-up updates, commit.
@@ -180,6 +201,8 @@ trigger AccountAfterUpdate on Account (after update) {
     update Trigger.new; // causes recursion risk and bad pattern
 }
 ```
+What this snippet does:
+- Demonstrates recursion-prone anti-pattern: mutating and updating `Trigger.new` in `after` context.
 
 ### Pattern 1: Prefer before trigger for same-record updates
 ```apex
@@ -192,6 +215,8 @@ trigger AccountBeforeUpdate on Account (before update) {
     }
 }
 ```
+What this snippet does:
+- Uses `before update` for same-record derived updates, avoiding extra DML and recursion risk.
 
 ### Pattern 2: Change detection + static guard
 ```apex
@@ -199,6 +224,8 @@ public class AccountTriggerRecursionGuard {
     public static Boolean isRunning = false;
 }
 ```
+What this snippet does:
+- Defines a static transaction-scoped guard flag to prevent re-entry loops.
 
 ```apex
 trigger AccountAfterUpdate on Account (after update) {
@@ -218,6 +245,8 @@ trigger AccountAfterUpdate on Account (after update) {
     }
 }
 ```
+What this snippet does:
+- Applies change detection and static guard to run follow-up DML safely once per transaction path.
 
 ### Pattern 3: Single-owner rule
 - Keep one automation owner per business rule (either Flow or Trigger).
@@ -238,6 +267,8 @@ Custom exception:
 ```apex
 public class BusinessRuleException extends Exception {}
 ```
+What this snippet does:
+- Defines a custom exception type for domain-specific rule violations.
 
 Handling pattern:
 ```apex
@@ -249,6 +280,8 @@ try {
     System.debug('Unexpected failure: ' + ex.getMessage());
 }
 ```
+What this snippet does:
+- Shows layered exception handling: specific `DmlException` first, then fallback `Exception`.
 
 ## Common mistakes
 - Querying inside trigger loop.

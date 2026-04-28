@@ -132,6 +132,9 @@ Example:
 ```apex
 List<Account> rows = [SELECT Id, Name FROM Account WITH SECURITY_ENFORCED];
 ```
+What this snippet does:
+- Executes a read query that enforces object/field access checks at query time.
+- Prevents returning protected fields when the running user lacks permission.
 
 Use `stripInaccessible` when receiving records from UI/API/dynamic payloads before DML:
 
@@ -142,6 +145,10 @@ SObjectAccessDecision decision = Security.stripInaccessible(
 );
 List<Account> safeRows = (List<Account>)decision.getRecords();
 ```
+What this snippet does:
+- Sanitizes inbound records by stripping fields the current user cannot create.
+- Produces a safe record list to use for DML without violating FLS.
+- Useful when records come from dynamic payloads or loosely trusted sources.
 
 ## SOQL injection
 SOQL injection happens when untrusted input is concatenated into dynamic SOQL.
@@ -155,11 +162,17 @@ Bad:
 ```apex
 String q = 'SELECT Id FROM Account WHERE Name = \'' + userInput + '\'';
 ```
+What this snippet does:
+- Shows an unsafe dynamic SOQL pattern vulnerable to injection.
+- Included as a "do not use" example because untrusted input is concatenated directly.
 
 Better:
 ```apex
 List<Account> rows = [SELECT Id FROM Account WHERE Name = :userInput];
 ```
+What this snippet does:
+- Uses bind variables so user input is treated as data, not executable query text.
+- Represents the preferred secure query pattern for user-provided filter values.
 
 ## Visualforce security
 Visualforce risks:

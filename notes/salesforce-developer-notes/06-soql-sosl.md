@@ -11,6 +11,9 @@ SOQL is object-centric and structured. Query one object (with relationships) usi
 ```apex
 List<Account> accs = [SELECT Id, Name, Industry FROM Account LIMIT 20];
 ```
+What this snippet does:
+- Runs a basic SOQL query selecting explicit fields from `Account`.
+- Uses `LIMIT` to keep result size bounded in sample/demo contexts.
 
 ## Variable binding
 ```apex
@@ -21,6 +24,9 @@ List<Account> rows = [
     WHERE Name = :targetName
 ];
 ```
+What this snippet does:
+- Demonstrates bind-variable filtering (`:targetName`) in static SOQL.
+- Keeps the query safe and readable versus string-concatenated filters.
 
 Benefits:
 - Safer than string concatenation.
@@ -34,6 +40,9 @@ List<Opportunity> opps = [
     WHERE CloseDate = LAST_N_DAYS:30
 ];
 ```
+What this snippet does:
+- Filters opportunities using a date literal (`LAST_N_DAYS:30`) instead of hardcoded dates.
+- Useful for rolling-window analytics without manual date math.
 
 ## Aggregate queries
 ```apex
@@ -46,6 +55,9 @@ for (AggregateResult ar : stats) {
     System.debug(ar.get('country') + ' -> ' + ar.get('total'));
 }
 ```
+What this snippet does:
+- Groups accounts by country and calculates record counts.
+- Reads aliased aggregate values from `AggregateResult` with `get(...)`.
 
 ## Relationship queries
 Child-to-parent:
@@ -56,6 +68,9 @@ List<Contact> contacts = [
     WHERE Account.Industry = 'Technology'
 ];
 ```
+What this snippet does:
+- Uses child-to-parent traversal (`Account.Name`, `Account.Industry`) from `Contact`.
+- Filters contacts by a parent field value in one query.
 
 Parent-to-child:
 ```apex
@@ -65,6 +80,9 @@ List<Account> accounts = [
     LIMIT 10
 ];
 ```
+What this snippet does:
+- Uses a parent-to-child subquery to return accounts and their related contacts together.
+- Reduces extra round-trips by fetching hierarchy in a single SOQL call.
 
 Multi-level example:
 ```apex
@@ -74,6 +92,9 @@ List<Case> cases = [
     WHERE Contact.Account.Owner.IsActive = true
 ];
 ```
+What this snippet does:
+- Demonstrates multi-level relationship traversal in SOQL.
+- Filters cases through related contact-account-owner properties.
 
 ## Dynamic SOQL
 ```apex
@@ -81,6 +102,9 @@ String fieldApi = 'Name';
 String q = 'SELECT Id, ' + fieldApi + ' FROM Account LIMIT 5';
 List<sObject> resultRows = Database.query(q);
 ```
+What this snippet does:
+- Builds and executes a dynamic SOQL statement at runtime.
+- Useful for metadata-driven scenarios where selected fields are not known at compile time.
 
 Use dynamic SOQL when:
 - Field/object is decided at runtime.
@@ -92,6 +116,8 @@ for (Account a : [SELECT Id, Name FROM Account]) {
     System.debug(a.Name);
 }
 ```
+What this snippet does:
+- Demonstrates SOQL-for-loop iteration, a pattern that helps process large query results efficiently.
 
 ## SOQL keywords reference (high-value)
 ### `IN` and `NOT IN`
@@ -108,6 +134,8 @@ List<Account> notInRows = [
     WHERE Name NOT IN :names
 ];
 ```
+What this snippet does:
+- Shows include/exclude filtering with `IN` and `NOT IN` against a bound collection.
 
 ### `ORDER BY`, `LIMIT`
 ```apex
@@ -119,6 +147,8 @@ List<Opportunity> topRows = [
     LIMIT 10
 ];
 ```
+What this snippet does:
+- Sorts by amount descending, pushes nulls last, and returns top-N rows with `LIMIT`.
 
 ### `GROUP BY` and `HAVING`
 ```apex
@@ -129,6 +159,8 @@ List<AggregateResult> grouped = [
     HAVING COUNT(Id) > 3
 ];
 ```
+What this snippet does:
+- Applies grouped aggregation with post-group filtering using `HAVING`.
 
 ### `FOR UPDATE`
 Locks selected records for update in the current transaction.
@@ -140,6 +172,8 @@ List<Opportunity> lockedRows = [
     FOR UPDATE
 ];
 ```
+What this snippet does:
+- Locks selected rows with `FOR UPDATE` to reduce concurrent update conflicts inside a transaction.
 
 ### `ALL ROWS`
 Includes soft-deleted records (where supported) and archived activity records.
@@ -151,6 +185,8 @@ List<Account> deletedRows = [
     ALL ROWS
 ];
 ```
+What this snippet does:
+- Includes soft-deleted records in query scope via `ALL ROWS`.
 
 ## Aggregate function notes
 ```apex
@@ -162,6 +198,9 @@ AggregateResult ar = [
 Integer uniqueTypeCount = (Integer)ar.get('uniqueTypes');
 Decimal avgAmount = (Decimal)ar.get('avgAmt');
 ```
+What this snippet does:
+- Combines direct count and aggregate metrics (`COUNT_DISTINCT`, `AVG`) in SOQL.
+- Casts aggregate aliases to concrete Apex types for typed downstream use.
 
 ## SOQL return types
 - `List<sObject>` or `List<Account>` for multi-record queries.
@@ -183,6 +222,9 @@ String soql = 'SELECT ' + String.join(requestedFields, ',') + ' FROM Account WHE
 String nameFilter = 'GenePoint';
 List<sObject> safeResult = Database.query(soql);
 ```
+What this snippet does:
+- Applies an allowlist to dynamic field selection before building query text.
+- Preserves runtime flexibility while reducing injection and invalid-field risk.
 
 ## SOSL basics
 SOSL is search-oriented (text search across objects/fields).
@@ -194,12 +236,16 @@ List<List<sObject>> searchResults = [
     RETURNING Account(Id, Name), Contact(Id, LastName, Email)
 ];
 ```
+What this snippet does:
+- Runs SOSL across multiple objects and returns grouped results by object order.
 
 Reading SOSL return:
 ```apex
 List<Account> foundAccounts = (List<Account>)searchResults[0];
 List<Contact> foundContacts = (List<Contact>)searchResults[1];
 ```
+What this snippet does:
+- Casts each SOSL result bucket to its concrete sObject list type.
 
 ## SOSL deep dive (keywords, groups, clauses)
 ### SOSL syntax template
@@ -211,6 +257,8 @@ List<List<sObject>> results = [
     RETURNING Account(Id, Name), Contact(Id, FirstName, LastName)
 ];
 ```
+What this snippet does:
+- Provides a reusable SOSL skeleton for keyword search plus multi-object `RETURNING` clauses.
 
 ### Search groups
 - `IN ALL FIELDS`: searches across eligible text, phone, email, and name fields.
@@ -241,6 +289,8 @@ List<List<sObject>> phoneFieldsRes = [
     RETURNING Contact(FirstName, LastName, Phone)
 ];
 ```
+What this snippet does:
+- Demonstrates search-group targeting (`ALL/NAME/EMAIL/PHONE FIELDS`) to control SOSL search scope.
 
 ### Wildcards
 - `*` matches zero or more characters.
@@ -250,6 +300,8 @@ List<List<sObject>> phoneFieldsRes = [
 List<List<sObject>> wildcard1 = [FIND 'Univ*' IN NAME FIELDS RETURNING Account(Name)];
 List<List<sObject>> wildcard2 = [FIND 'Jo?n' IN NAME FIELDS RETURNING Contact(FirstName, LastName)];
 ```
+What this snippet does:
+- Shows wildcard behavior: `*` for many characters and `?` for a single character.
 
 ### Clauses in RETURNING
 You can apply `WHERE`, `ORDER BY`, and `LIMIT` inside each object specification in `RETURNING`.
@@ -263,6 +315,8 @@ List<List<sObject>> clauseRes = [
         Contact(FirstName, LastName)
 ];
 ```
+What this snippet does:
+- Applies object-specific `WHERE`, `ORDER BY`, and `LIMIT` inside SOSL `RETURNING`.
 
 Note: when using object-specific clauses, include a field list for that returned object.
 
@@ -275,6 +329,8 @@ List<List<sObject>> r = [
 List<Account> accRows = (List<Account>)r[0];
 List<Contact> conRows = (List<Contact>)r[1];
 ```
+What this snippet does:
+- Demonstrates the standard parsing pattern for multi-object SOSL results.
 
 ## SOQL vs SOSL
 - **SOQL:** structured filters and exact record retrieval.

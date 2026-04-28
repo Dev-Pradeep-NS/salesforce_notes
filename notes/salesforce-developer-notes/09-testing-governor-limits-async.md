@@ -17,6 +17,9 @@ private class AccountServiceTest {
     }
 }
 ```
+What this snippet does:
+- Defines a minimal Apex unit test that inserts a record and asserts successful persistence.
+- Shows baseline test structure with `@IsTest` class and method annotations.
 
 ## Test data strategy
 - Build data in test methods or factory classes.
@@ -29,6 +32,9 @@ Test.startTest();
 // invoke async / heavy logic
 Test.stopTest();
 ```
+What this snippet does:
+- Resets governor counters for the measured test segment.
+- Forces queued async work to execute at `Test.stopTest()` before assertions.
 
 - `System.runAs(user)` for profile/role-specific behavior checks.
 - `Test.setMock()` for callout tests.
@@ -79,6 +85,8 @@ System.debug('SOQL used: ' + Limits.getQueries() + '/' + Limits.getLimitQueries(
 System.debug('DML used: ' + Limits.getDmlStatements() + '/' + Limits.getLimitDmlStatements());
 System.debug('CPU ms used: ' + Limits.getCpuTime() + '/' + Limits.getLimitCpuTime());
 ```
+What this snippet does:
+- Prints current vs maximum governor usage for debugging and limit-aware tuning.
 
 ## Async Apex types
 - `@future`: simple fire-and-forget.
@@ -106,6 +114,8 @@ public class UpdateIndustryQueueable implements Queueable {
     }
 }
 ```
+What this snippet does:
+- Implements queueable async processing to update account industries in bulk.
 
 ## Batch example
 ```apex
@@ -120,6 +130,8 @@ global class AccountBatch implements Database.Batchable<sObject> {
     global void finish(Database.BatchableContext bc) {}
 }
 ```
+What this snippet does:
+- Implements batch lifecycle (`start`, `execute`, `finish`) for chunked large-volume processing.
 
 ## Scheduling example
 ```apex
@@ -129,6 +141,8 @@ global class NightlyScheduler implements Schedulable {
     }
 }
 ```
+What this snippet does:
+- Schedules batch execution through a schedulable wrapper class.
 
 ## Common mistakes
 - Asserting only coverage, not behavior.

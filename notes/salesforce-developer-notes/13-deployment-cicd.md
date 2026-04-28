@@ -39,11 +39,16 @@ sf org login web --alias dev-org
 sf project deploy start --target-org dev-org
 sf apex run test --target-org dev-org --code-coverage --result-format human
 ```
+What this snippet does:
+- Authenticates to an org, deploys project metadata, then runs Apex tests with coverage output.
+- Represents a minimal local validate cycle before PR or CI handoff.
 
 Validation against target:
 ```bash
 sf project deploy validate --target-org uat-org
 ```
+What this snippet does:
+- Performs a check-only style validation against target org without committing deployment changes.
 
 ## Recommended pipeline stages
 - **Lint/static checks:** metadata quality and formatting.

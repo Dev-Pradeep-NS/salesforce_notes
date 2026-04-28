@@ -14,18 +14,26 @@ insert a;
 a.Name = 'Acme Updated';
 update a;
 ```
+What this snippet does:
+- Demonstrates the basic create-then-update lifecycle using DML statements.
+- Shows that after insert, the same in-memory record can be modified and updated.
 
 ## Upsert with external ID
 ```apex
 Account extAcc = new Account(External_Id__c = 'ACC-1001', Name = 'Ext Account');
 upsert extAcc External_Id__c;
 ```
+What this snippet does:
+- Performs create-or-update using an external id key.
+- Supports integration-friendly idempotent writes without requiring Salesforce Id upfront.
 
 ## Delete and undelete
 ```apex
 delete extAcc;
 undelete extAcc;
 ```
+What this snippet does:
+- Shows soft-delete and restore flow for recyclable records.
 
 ## Merge duplicates
 ```apex
@@ -34,6 +42,8 @@ Account duplicate = new Account(Name = 'Dup Acme');
 insert duplicate;
 merge master duplicate;
 ```
+What this snippet does:
+- Demonstrates duplicate consolidation where one record is retained as master.
 
 ## Database class for partial success
 `Database.insert(records, false)` avoids all-or-none failure.
@@ -53,6 +63,9 @@ for (Database.SaveResult sr : saveResults) {
     }
 }
 ```
+What this snippet does:
+- Uses `Database.insert(..., false)` to allow partial success in a mixed-validity batch.
+- Iterates `SaveResult` errors per row to capture granular failure reasons.
 
 ## Transaction control and rollback
 ```apex
@@ -64,6 +77,9 @@ try {
     Database.rollback(sp);
 }
 ```
+What this snippet does:
+- Creates a savepoint, attempts multi-step DML, and rolls back on failure.
+- Demonstrates transaction atomicity control in Apex.
 
 ## Transfer-style transaction example (Savepoint pattern)
 Use this pattern when two related updates must succeed together, or both revert.
@@ -119,6 +135,10 @@ public with sharing class OpportunityTransferService {
     }
 }
 ```
+What this snippet does:
+- Implements a guarded transfer operation with upfront input validation.
+- Locks source/target rows (`FOR UPDATE`) to reduce concurrent modification issues.
+- Applies all-or-nothing update behavior via savepoint and rollback on DML exception.
 
 Why this is important:
 - Shows atomic transaction behavior.
@@ -158,6 +178,8 @@ for (Database.SaveResult r : res) {
     }
 }
 ```
+What this snippet does:
+- Shows the standard per-record result inspection pattern for partial DML operations.
 
 ### `UpsertResult` pattern
 ```apex
@@ -168,12 +190,16 @@ for (Database.UpsertResult r : upsertRes) {
     }
 }
 ```
+What this snippet does:
+- Handles upsert results and checks `isCreated()` to distinguish insert vs update outcomes.
 
 ### `DeleteResult` / `UndeleteResult` pattern
 ```apex
 Database.DeleteResult[] delRes = Database.delete(records, false);
 Database.UndeleteResult[] undelRes = Database.undelete(records, false);
 ```
+What this snippet does:
+- Captures structured result objects for delete and undelete operations with partial success support.
 
 ### `LeadConvertResult` pattern
 ```apex
@@ -187,6 +213,8 @@ if (!lcr.isSuccess()) {
     }
 }
 ```
+What this snippet does:
+- Configures and executes lead conversion, then inspects conversion errors.
 
 ## DML cookbook (class-style consolidated examples)
 ### Standalone DML flow in one place
@@ -221,6 +249,8 @@ public with sharing class DmlCookbook {
     }
 }
 ```
+What this snippet does:
+- Consolidates common DML patterns (`insert/update/upsert/delete/undelete`) in one reusable demo class.
 
 ### Duplicate-delete pattern (safe version)
 Avoid deduping only by `Name` in production; use stronger keys when possible.
@@ -238,6 +268,8 @@ for (Contact c : contacts) {
 }
 if (!toDelete.isEmpty()) delete toDelete;
 ```
+What this snippet does:
+- Performs email-keyed deduplication, preserving first-seen record and deleting duplicates in bulk.
 
 ### Merge combinations (quick reference)
 Merge supports Accounts, Contacts, and Leads.
@@ -245,10 +277,14 @@ Merge supports Accounts, Contacts, and Leads.
 ```apex
 // merge masterAcc duplicateAcc;
 ```
+What this snippet does:
+- Shows single-duplicate merge syntax form for quick reference.
 - master + list of duplicates (up to two at a time):
 ```apex
 // merge masterAcc new List<Account>{dup1, dup2};
 ```
+What this snippet does:
+- Shows merge syntax for up to two duplicates in one operation.
 
 ### Bulkification: bad vs good
 Bad (query inside loop):
@@ -257,6 +293,8 @@ for (Account a : [SELECT Id FROM Account LIMIT 50]) {
     List<Opportunity> opps = [SELECT Id, Name FROM Opportunity WHERE AccountId = :a.Id];
 }
 ```
+What this snippet does:
+- Demonstrates a non-bulk-safe anti-pattern (query-inside-loop) that should be avoided.
 
 Good (single grouped query):
 ```apex
@@ -267,6 +305,8 @@ for (Opportunity o : [SELECT Id, Name, AccountId FROM Opportunity WHERE AccountI
     oppByAcc.get(o.AccountId).add(o);
 }
 ```
+What this snippet does:
+- Shows bulk-safe grouping: one account query plus one grouped opportunity query, then map assembly.
 
 ## Best practices
 - Group DML by object type.

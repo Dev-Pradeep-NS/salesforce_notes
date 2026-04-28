@@ -23,6 +23,10 @@ public class VipDiscountPolicy extends DiscountPolicy {
     }
 }
 ```
+What this snippet does:
+- Defines a base policy and a specialized VIP override to demonstrate polymorphism.
+- Uses `virtual` and `override` so behavior can be extended cleanly.
+- Includes null-safe handling in discount calculation.
 
 ## Class structure best practice
 - Keep controller/trigger layers thin.
@@ -45,6 +49,9 @@ public static String evaluateScore(Integer score) {
     return 'D';
 }
 ```
+What this snippet does:
+- Uses early returns to keep grading logic flat and readable.
+- Applies threshold checks in descending order and handles null input explicitly.
 
 ## Switch for cleaner branch rules
 ```apex
@@ -57,6 +64,9 @@ public static String statusLabel(String code) {
     }
 }
 ```
+What this snippet does:
+- Maps compact status codes to readable labels with `switch on`.
+- Provides a default branch for unknown values.
 
 ## Looping strategies
 - `for each` loop for collections.
@@ -71,6 +81,9 @@ for (Id accId : accById.keySet()) {
     System.debug(accById.get(accId).Name);
 }
 ```
+What this snippet does:
+- Demonstrates map-based iteration for scalable Id-driven processing.
+- Avoids nested lookups/loops by using keyed access.
 
 ## Anti-patterns to avoid
 - Deep nested `if` chains without early exits.
@@ -88,3 +101,4 @@ for (Id accId : accById.keySet()) {
 1. Create base `NotificationService` and two implementations (Email/SMS stub).
 2. Write method to classify records by score and status with clean branching.
 3. Refactor nested loops into map-based lookup approach.
+

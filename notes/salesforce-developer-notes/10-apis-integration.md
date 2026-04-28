@@ -39,6 +39,9 @@ global with sharing class AccountApi {
     }
 }
 ```
+What this snippet does:
+- Exposes a custom Apex REST resource and handles `GET` requests.
+- Returns a capped list of accounts as JSON response payload.
 
 POST pattern:
 ```apex
@@ -51,6 +54,9 @@ global static Id createAccount() {
     return a.Id;
 }
 ```
+What this snippet does:
+- Reads inbound JSON request body, maps a `name` field, inserts an `Account`, and returns new record Id.
+- Demonstrates a basic create endpoint pattern for custom REST APIs.
 
 ## Outbound callout basics
 ```apex
@@ -61,6 +67,9 @@ req.setTimeout(120000);
 HttpResponse res = new Http().send(req);
 Integer statusCode = res.getStatusCode();
 ```
+What this snippet does:
+- Builds and sends an outbound HTTP callout using a Named Credential endpoint alias.
+- Captures response status for downstream success/failure handling.
 
 ## Request/response design tips
 - Validate request body fields before DML.
