@@ -63,12 +63,3 @@ It is now shaped specifically for Salesforce Platform Developer I preparation: A
 5. Common mistakes
 6. Interview Q&A
 7. Practice task
-
-## Suggested Weekly Revision Rhythm
-- Monday: Salesforce fundamentals + data modeling
-- Tuesday: Apex basics + datatypes + OOP
-- Wednesday: Declarative automation + SOQL/SOSL + DML
-- Thursday: Triggers + exceptions + security
-- Friday: Testing + async + governor limits
-- Saturday: LWC + Visualforce + deployment/debugging
-- Sunday: Full revision map + one small end-to-end feature
