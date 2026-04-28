@@ -1,0 +1,90 @@
+# 04 - OOP and Control Flow (Detailed)
+
+## Learning goals
+- Apply OOP principles in Apex class design.
+- Use control structures to build predictable business logic.
+- Write readable, maintainable branch/loop code.
+
+## OOP in Apex
+Core principles:
+- Encapsulation
+- Inheritance
+- Polymorphism
+- Abstraction
+
+```apex
+public virtual class DiscountPolicy {
+    public virtual Decimal apply(Decimal amount) { return amount; }
+}
+
+public class VipDiscountPolicy extends DiscountPolicy {
+    public override Decimal apply(Decimal amount) {
+        return amount == null ? 0 : amount * 0.9;
+    }
+}
+```
+
+## Class structure best practice
+- Keep controller/trigger layers thin.
+- Move business logic into service/domain classes.
+- Keep utility classes stateless and static when possible.
+
+## Access modifiers in practice
+- `private`: class internal implementation.
+- `protected`: extension-focused inheritance visibility.
+- `public`: org-visible use.
+- `global`: package/API-level broad visibility.
+
+## Conditional logic patterns
+```apex
+public static String evaluateScore(Integer score) {
+    if (score == null) return 'UNKNOWN';
+    if (score >= 90) return 'A';
+    if (score >= 75) return 'B';
+    if (score >= 60) return 'C';
+    return 'D';
+}
+```
+
+## Switch for cleaner branch rules
+```apex
+public static String statusLabel(String code) {
+    switch on code {
+        when 'NEW' { return 'New Lead'; }
+        when 'QFD' { return 'Qualified'; }
+        when 'CLO' { return 'Closed'; }
+        when else { return 'Unknown'; }
+    }
+}
+```
+
+## Looping strategies
+- `for each` loop for collections.
+- index loop only when position matters.
+- avoid nested loops unless optimized with maps.
+
+```apex
+Map<Id, Account> accById = new Map<Id, Account>(
+    [SELECT Id, Name FROM Account LIMIT 50]
+);
+for (Id accId : accById.keySet()) {
+    System.debug(accById.get(accId).Name);
+}
+```
+
+## Anti-patterns to avoid
+- Deep nested `if` chains without early exits.
+- Complex loop logic that mixes querying, transformation, and DML.
+- Hidden side effects inside getters.
+
+## Interview quick Q&A
+- **Q:** Can Apex support polymorphism?
+- **A:** Yes, via `virtual` classes/methods and `override`.
+
+- **Q:** Why use early returns?
+- **A:** Reduces nesting, improves readability, and clarifies guard conditions.
+
+## Practice set
+1. Create base `NotificationService` and two implementations (Email/SMS stub).
+2. Write method to classify records by score and status with clean branching.
+3. Refactor nested loops into map-based lookup approach.
